@@ -1,0 +1,49 @@
+<html>
+
+<head>
+    <title>登录</title>
+</head>
+<meta charset="UTF-8">
+
+<body>
+    <div id="app">
+        <h1>登录</h1>
+        <form @submit.prevent="login">
+            <input type="text" v-model="username" placeholder="用户名" required><br>
+            <input type="password" v-model="password" placeholder="密码" required><br>
+            <button type="submit">登录</button>
+        </form>
+    </div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                username: '',
+                password: ''
+            };
+        },
+        methods: {
+            async login() {
+                // 发送登录请求到后端
+                try {
+                    const response = await axios.post('/login', {
+                        username: this.username,
+                        password: this.password
+                    });
+                    // 处理登录成功的逻辑，如保存登录状态等
+                    console.log(response.data);
+                } catch (error) {
+                    // 处理登录失败的逻辑
+                    console.error(error);
+                }
+            }
+        }
+    })
+</script>
+
+</html>

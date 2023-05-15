@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>文件上传和打印</title>
+</head>
+
+<body>
+    <h1>文件上传和打印</h1>
+    <input type="file" name="file" id="fileInput" /><br />
+
+    <button id="uploadFile">上传</button>
+    <button id="printButton">打印</button>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const uploadFile = document.getElementById('uploadFile');
+    const printButton = document.getElementById('printButton');
+
+    uploadFile.onclick = function () {
+        if (!fileInput.files.length) {
+            return alert('请选择文件');
+        }
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // 发送 POST 请求
+        axios.post('/upload', formData)
+            .then(response => {
+                // 请求成功的处理
+                console.log(response);
+                localStorage.setItem('filename', response.data);
+            })
+            .catch(error => {
+                // 请求失败的处理
+                console.error('上传请求失败:', error);
+            });
+    };
+
+
+
+
+
+    document.getElementById('printButton').addEventListener('click', function () {
+        // 准备要发送的数据
+        const data = {
+            filename: localStorage.getItem('filename'),
+        };
+
+        // 发送 POST 请求
+        axios.post('/print', data)
+            .then(response => {
+                // 请求成功的处理
+                console.log('打印请求成功');
+            })
+            .catch(error => {
+                // 请求失败的处理
+                console.error('打印请求失败:', error);
+            });
+    });
+</script>
+
+</html>
