@@ -5,6 +5,8 @@ const cors = require('cors');
 const fileWatcher = require('./fileWatcher');
 const upload_router = require('./router/uploadRouter');
 const print_router = require('./router/printRouter');
+const users_router = require('./users');
+const protected_router = require('./protectedRouter');
 
 const app = express();
 app.use(cors());
@@ -15,6 +17,9 @@ app.use(express.static('public'));
 // 使用 body-parser 中间件解析请求体
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+app.use('/users', users_router);
+app.use('/protected', protected_router);
 
 // 上传
 app.use('/upload', upload_router);

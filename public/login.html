@@ -12,6 +12,7 @@
             <input type="text" v-model="username" placeholder="用户名" required><br>
             <input type="password" v-model="password" placeholder="密码" required><br>
             <button type="submit">登录</button>
+            <button type="button" @click="register">注册</button>
         </form>
     </div>
 </body>
@@ -31,16 +32,20 @@
             async login() {
                 // 发送登录请求到后端
                 try {
-                    const response = await axios.post('/login', {
+                    const response = await axios.post('/users/login', {
                         username: this.username,
                         password: this.password
                     });
                     // 处理登录成功的逻辑，如保存登录状态等
                     console.log(response.data);
+                    localStorage.setItem('token', response.data.token);
                 } catch (error) {
                     // 处理登录失败的逻辑
                     console.error(error);
                 }
+            },
+            register() {
+                window.location.href = '/register.html';
             }
         }
     })

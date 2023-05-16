@@ -116,13 +116,18 @@
                     };
 
                     try {
-                        const response = await axios.post('http://localhost:3000/print', data);
+                        const response = await axios.post('http://localhost:3000/print', data, {
+                            headers: {
+                                Authorization: 'Bearer ' + localStorage.getItem('token')
+                            }
+                        });
                         if (response.status === 200) {
                             alert('打印成功');
                         } else {
                             alert('打印失败');
                         }
                     } catch (error) {
+                        console.log(error)
                         alert('打印失败');
                     }
                 },

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>register</title>
+</head>
+
+<body>
+    <div id="app">
+        <input type="text" v-model="username">
+        <input type="password" v-model="password">
+        <button @click="register">注册</button>
+        <button @click="login">登录</button>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    new Vue({
+        el: "#app",
+        data: {
+            username: "",
+            password: "",
+        },
+        methods: {
+            async register() {
+                try {
+                    const response = await axios.post("/users/register", {
+                        username: this.username,
+                        password: this.password,
+                    });
+                    console.log(response.data);
+                } catch (error) {
+                    console.error(error);
+                }
+            },
+            async login() {
+                window.location.href = "/login.html"
+            },
+        },
+    })
+</script>
+
+</html>

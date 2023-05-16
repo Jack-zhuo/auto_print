@@ -2,9 +2,10 @@ const path = require('path');
 const printer = require('pdf-to-printer');
 const express = require('express');
 const printRouter = express.Router();
+const authMiddleware = require('../authMiddleware');
 
 // 处理打印操作的路由
-printRouter.post('/', (req, res) => {
+printRouter.post('/', authMiddleware, (req, res) => {
     const { filename } = req.body;
     // 执行打印操作的逻辑
     if (filename) {
