@@ -2,64 +2,142 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
     <title>文件上传和打印</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .file-input {
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .button-container button {
+            margin: 0 10px;
+        }
+
+        .success-message {
+            text-align: center;
+            margin-top: 20px;
+            color: green;
+        }
+
+        .error-message {
+            text-align: center;
+            margin-top: 20px;
+            color: red;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>文件上传和打印</h1>
-    <input type="file" name="file" id="fileInput" /><br />
+    <div id="app" class="container">
+        <h1>文件上传和打印</h1>
+        <div class="file-input">
+            <input type="file" id="fileInput" v-on:change="onFileChange" />
+        </div>
+        <div class="button-container">
+            <button v-on:click="uploadFile">上传</button>
+            <button v-on:click="printFile">打印</button>
+            <button v-on:click="login">登录</button>
+        </div>
+        <div v-if="rFilename" class="success-message">
+            文件上传成功！
+        </div>
+        <div v-if="error" class="error-message">
+            {{ error }}
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    file: null,
+                    filename: null,
+                    rFilename: null,
+                    error: null
+                };
+            },
+            methods: {
+                onFileChange(event) {
+                    this.file = event.target.files[0];
+                    this.filename = this.file.name;
+                },
+                async uploadFile() {
+                    if (!this.file) {
+                        return alert('请选择文件');
+                    }
 
-    <button id="uploadFile">上传</button>
-    <button id="printButton">打印</button>
+                    const formData = new FormData();
+                    formData.append('file', this.file);
+
+                    try {
+                        const response = await axios.post('http://localhost:3000/upload', formData);
+                        if (response.status === 200) {
+                            this.rFilename = response.data;
+                            alert('上传成功')
+                        } else {
+                            alert('上传失败')
+                        }
+                    } catch (error) {
+                        alert('上传失败', error)
+                    }
+                },
+                async printFile() {
+                    if (!this.rFilename) {
+                        return alert('请先上传文件');
+                    }
+
+                    const data = {
+                        filename: this.rFilename,
+                    };
+
+                    try {
+                        const response = await axios.post('http://localhost:3000/print', data, {
+                            headers: {
+                                Authorization: localStorage.getItem('token')
+                            }
+                        });
+                        if (response.status === 200) {
+                            alert('打印成功');
+                        } else {
+                            alert('打印失败');
+                        }
+                    } catch (error) {
+                        console.log(error)
+                        alert('打印失败');
+                    }
+                },
+                async login() {
+                    window.location.href = "/login.html"
+                },
+            },
+        });
+    </script>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script>
-    const fileInput = document.getElementById('fileInput');
-    const uploadFile = document.getElementById('uploadFile');
-    const printButton = document.getElementById('printButton');
-
-    uploadFile.onclick = function () {
-        if (!fileInput.files.length) {
-            return alert('请选择文件');
-        }
-        const file = fileInput.files[0];
-        const formData = new FormData();
-        formData.append('file', file);
-
-        // 发送 POST 请求
-        axios.post('/upload', formData)
-            .then(response => {
-                // 请求成功的处理
-                console.log(response);
-                localStorage.setItem('filename', response.data);
-            })
-            .catch(error => {
-                // 请求失败的处理
-                console.error('上传请求失败:', error);
-            });
-    };
-
-
-
-
-
-    document.getElementById('printButton').addEventListener('click', function () {
-        // 准备要发送的数据
-        const data = {
-            filename: localStorage.getItem('filename'),
-        };
-
-        // 发送 POST 请求
-        axios.post('/print', data)
-            .then(response => {
-                // 请求成功的处理
-                console.log('打印请求成功');
-            })
-            .catch(error => {
-                // 请求失败的处理
-                console.error('打印请求失败:', error);
-            });
-    });
-</script>
 
 </html>

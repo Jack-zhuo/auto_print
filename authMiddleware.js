@@ -14,7 +14,6 @@ function authMiddleware(req, res, next) {
 
     try {
         // 验证令牌的有效性并解码
-        console.log("token: " + token);
         const payload = jwt.verify(token, 'secret_key');
         console.log("payload: " + payload.username);
         req.username = payload.username; // 将解码后的用户信息存储在请求对象中
